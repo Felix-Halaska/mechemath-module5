@@ -1,7 +1,7 @@
-function simulate_box()
+function simulate_box_test()
     %define system parameters
     LW = 10; LH = 1; LG = 3;
-    m = 1; Ic = (1/12)*(LHˆ2+LWˆ2);
+    m = 1; Ic = (1/12)*(LH^2+LW^2);
     g = 1; k = 20; k_list = [.5*k,.5*k,2*k,5*k];
     l0 = 1.5*LG;
     Pbl_box = [-LW;-LH]/2;
@@ -39,9 +39,23 @@ function simulate_box()
     %run the integration
     [tlist,Vlist] = ode45(my_rate_func,tspan,V0);
 
+    %plot!
+    num_zigs = 5;
+    w = .1;
+    sprint_plot_struct = initialize_spring_plot(num_zigs, w);
+
+    for i = 1:length(Vlist, 2)
+        p_list_world = compute_rbt(Vlist(1, i), Vlist(2, i), Vlist(3, i), box_params.P_box);
+
+        update_all_springs(sprint_plot_struct, p_list_world, box_params);
+
+        drawnow
+    end
+
+
     
 end
 
-
+simulate_box_test()
 
 
