@@ -28,9 +28,9 @@ function simulate_box_test()
     %load the system parameters into the rate function
     %via an anonymous function
     my_rate_func = @(t_in,V_in) box_rate_func(t_in,V_in,box_params);
-    x0 = 0.1;
-    y0 = 0.1;
-    theta0 = 0.1;
+    x0 = 2;
+    y0 = 2;
+    theta0 = 0;
     vx0 = 0;
     vy0 = 0;
     vtheta0 = 0;
@@ -39,28 +39,54 @@ function simulate_box_test()
     %run the integration
     [tlist,Vlist] = ode45(my_rate_func,tspan,V0);
 
+    Vlist = zeros(6,16);
+
     %plot!
     num_zigs = 5;
     w = .1;
-    spring_plot_struct_br1 = initialize_spring_plot(num_zigs, w);
-    spring_plot_struct_br2 = initialize_spring_plot(num_zigs, w);
-    spring_plot_struct_bl1 = initialize_spring_plot(num_zigs, w);
-    spring_plot_struct_bl2 = initialize_spring_plot(num_zigs, w);
+    hold on
+
+    box_plot = plot(0,0,'k','LineWidth',)
+
+    spring_plots = {};
+
+    num_springs = size(P_world,2);
+
+    for n=1:num_springs
+        spring_plots{n} = initialize_spring_plot(num_zigs, w);
+    end
+
+
     axis equal; axis square;
-    axis([-3,3,-3,3]);
+    % axis([-10,0,-5,5]);
 
     for i = 1:size(Vlist, 2)
         p_list_world = compute_rbt(Vlist(1, i), Vlist(2, i), Vlist(3, i), box_params.P_box);
-        hold on
-        update_spring_plot(spring_plot_struct_br1, p_list_world(1, 1), box_params(2,1));
-        update_spring_plot(spring_plot_struct_br2, p_list_world(:, 2), box_params(:,2));
-        update_spring_plot(spring_plot_struct_bl1, p_list_world(:, 3), box_params(:,3));
-        update_spring_plot(spring_plot_struct_bl2, p_list_world(:, 4), box_params(:,4));
 
-        drawnow
-        hold on
+        update_all_springs(spring_plots,p_list_world,box_params);
+        drawnow;
     end
 
+
+    
+    % spring_plot_struct_br1 = initialize_spring_plot(num_zigs, w);
+    % spring_plot_struct_br2 = initialize_spring_plot(num_zigs, w);
+    % spring_plot_struct_bl1 = initialize_spring_plot(num_zigs, w);
+    % spring_plot_struct_bl2 = initialize_spring_plot(num_zigs, w);
+    % axis equal; axis square;
+    % axis([-10,0,-5,5]);
+    % 
+    % for i = 1:size(Vlist, 2)
+    %     p_list_world = compute_rbt(Vlist(1, i), Vlist(2, i), Vlist(3, i), box_params.P_box);
+    % 
+    %     update_spring_plot(spring_plot_struct_br1, p_list_world(:, 1), box_params.P_world(:,1));
+    %     update_spring_plot(spring_plot_struct_br2, p_list_world(:, 2), box_params.P_world(:,2));
+    %     update_spring_plot(spring_plot_struct_bl1, p_list_world(:, 3), box_params.P_world(:,3));
+    %     update_spring_plot(spring_plot_struct_bl2, p_list_world(:, 4), box_params.P_world(:,4));
+    % 
+    %     drawnow;
+    % end
+    % 
 
     
 end

@@ -8,7 +8,7 @@ function simulate_box_test()
     Pbr_box = [LW;-LH]/2;
     Ptl_box = [-LW;LH]/2;
     Ptr_box = [LW;LH]/2;
-    boundary_pts = [Pbl_box,Pbr_box,Ptr_box,Ptl_box];
+    boundary_pts = [Pbl_box,Pbr_box,Ptr_box,Ptl_box,Pbl_box];
     Pbl1_world = Pbl_box + [-LG;-LG];
     Pbl2_world = Pbl_box + [LG;-LG];
     Pbr1_world = Pbr_box + [0;-l0];
@@ -35,34 +35,65 @@ function simulate_box_test()
     vy0 = 0;
     vtheta0 = 0;
     V0 = [x0;y0;theta0;vx0;vy0;vtheta0];
-    tspan = [0,1];
+    tspan = [0,2];
     %run the integration
     [tlist,Vlist] = ode45(my_rate_func,tspan,V0);
 
+  
+    
     %plot!
     num_zigs = 5;
     w = .1;
     hold on
-    spring_plot_struct_br1 = initialize_spring_plot(num_zigs, w);
-    spring_plot_struct_br2 = initialize_spring_plot(num_zigs, w);
-    spring_plot_struct_bl1 = initialize_spring_plot(num_zigs, w);
-    spring_plot_struct_bl2 = initialize_spring_plot(num_zigs, w);
-    axis equal; axis square;
-    axis([-10,0,-5,5]);
 
-    for i = 1:size(Vlist, 2)
-        p_list_world = compute_rbt(Vlist(1, i), Vlist(2, i), Vlist(3, i), box_params.P_box);
+    path = 'C:\Users\fhalaska\Documents\MechEMath\mechemath-module5\plots';
+    fname = 'vibrating_box_ani.avi';
+    input = [path, fname];
+    
+    writerObj = VideoWriter(input);
+    open(writerObj);
 
-        update_spring_plot(spring_plot_struct_br1, p_list_world(:, 1), box_params.P_world(:,1));
-        update_spring_plot(spring_plot_struct_br2, p_list_world(:, 2), box_params.P_world(:,2));
-        update_spring_plot(spring_plot_struct_bl1, p_list_world(:, 3), box_params.P_world(:,3));
-        update_spring_plot(spring_plot_struct_bl2, p_list_world(:, 4), box_params.P_world(:,4));
+    fig1 = figure(1);
+    set(fig1,'units', 'pixels', 'position', [0 0 1440 1080]);
+    box_plot = plot(0,0,'k','LineWidth',2);
 
-        drawnow;
+    spring_plots = {};
+
+    num_springs = size(P_world,2);
+
+    for n=1:num_springs
+        spring_plots{n} = initialize_spring_plot(num_zigs, w);
     end
 
 
-    
+    axis equal; axis square;
+
+    axis([-20,20,-20,20]);
+    ax = gca;
+    ax.FontSize = 16;
+    ax.XAxis.TickLabelInterpreter = 'Latex';
+    ax.YAxis.TickLabelInterpreter = 'Latex';
+
+    xlabel("x (-)", Interpreter="latex", FontSize=16)
+    ylabel("y (-)", Interpreter="latex", FontSize=16)
+    title("Vibrating Box Animation", Interpreter="latex", FontSize=18)
+
+
+
+    for i = 1:size(Vlist, 1)
+        p_list_world = compute_rbt(Vlist(i,1), Vlist(i,2), Vlist(i,3), box_params.P_box);
+
+        boundary_points_world = compute_rbt(Vlist(i,1), Vlist(i,2), Vlist(i,3), boundary_pts);
+
+        set(box_plot,'xdata',boundary_points_world(1,:),'ydata',boundary_points_world(2,:));
+        update_all_springs(spring_plots,p_list_world,box_params);
+        drawnow;
+        current_frame = getframe(fig1);
+        writeVideo(writerObj, current_frame);
+        pause(.01);
+    end
+    close(writerObj);
+
 end
 
 simulate_box_test()

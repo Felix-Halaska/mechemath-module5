@@ -1,0 +1,53 @@
+
+dx0 = 0;
+dy0 = 0;
+dtheta0 = 0;
+vx0 = 0;
+vy0 = 0;
+vtheta0 = 0;
+%small number used to scale initial perturbation
+epsilon = 0.1;
+V0 = Veq + epsilon*[dx0;dy0;dtheta0;vx0;vy0;vtheta0];
+
+Veq = find_equilibrium(@box_rate_func, V0);
+
+J_approx = j_approx(@box_rate_func, Veq);
+
+my_linear_rate = @(t_in,V_in) J_approx*(V_in-V_eq);
+
+tspan = [0 1];
+%run the integration of nonlinear system
+[tlist_nonlinear,Vlist_nonlinear] = ode45(@box_rate_func, tspan, V0);
+% your_integrator(my_rate_func,tspan,V0,...);
+%run the integration of linear system
+[tlist_linear,Vlist_linear] = ode45(my_linear_rate, tspan, V0);
+% your_integrator(my_linear_rate,tspan,V0,...);
+
+
+f=figure();
+tcl = tiledlayout(3, 1);
+
+nexttile(tcl);
+hold on
+
+plot(tlist_linear, V_list(:, 1), 'k', LineWidth=5);
+plot(r_t_list, r_X_list(1, :), 'o',markerfaceColor='r',MarkerEdgeColor='r', LineWidth=2, MarkerIndices=1:200:length(r_X_list(1, :)));
+plot(h_t_list, h_X_list(1, :),'o', markerfaceColor='b',markeredgeColor='b', LineWidth=2, MarkerIndices=75:200:length(h_X_list(1, :)));
+plot(rk4_t_list, rk4_X_list(1, :), 'o', markerfaceColor='g',markeredgeColor='g', LineWidth=2, MarkerIndices=150:200:length(rk4_X_list(1, :)));
+xlabel("Time (-)", Interpreter="latex", FontSize=14)
+ylabel("x position (-)", Interpreter="latex", FontSize=14)
+hold off;
+
+nexttile(tcl);
+hold on
+plot(t_range, V_list(:, 2), 'k', LineWidth=5);
+plot(r_t_list, r_X_list(2, :), 'o',markerfaceColor='r',MarkerEdgeColor='r', LineWidth=2, MarkerIndices=1:200:length(r_X_list(2, :)));
+plot(h_t_list, h_X_list(2, :), 'o', markerfaceColor='b',markeredgeColor='b', LineWidth=2, MarkerIndices=75:200:length(h_X_list(2, :)));
+plot(rk4_t_list, rk4_X_list(2, :), 'o', markerfaceColor='g',markeredgeColor='g', LineWidth=2, MarkerIndices=150:200:length(rk4_X_list(2, :)));
+xlabel("Time (-)", Interpreter="latex", FontSize=14)
+ylabel("y position (-)", Interpreter="latex", FontSize=14)
+hold off;
+
+sgtitle("Planetary Orbit Integration Visualized with Several R-K Methods", Interpreter='latex', FontSize=15)
+hl = legend(["Ground Truth" "Ralston's 2nd Order" "Heun's 3rd Order" 'Runge-Kutta 4th Order'],Interpreter='latex', FontSize=15);
+hl.Layout.Tile = 'South';

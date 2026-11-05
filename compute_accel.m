@@ -26,7 +26,7 @@ function [ax,ay,atheta] = compute_accel(x,y,theta,box_params)
     Plist_world = compute_rbt(x,y,theta,box_params.P_box);
 
     for i = 1:length(box_params.k_list)
-        force = [force, compute_spring_force(box_params.k_list(i), box_params.l0_list(i), Plist_world(:,i), box_params.P_world(:,i))];
+        force = [force, compute_spring_force(box_params.k_list(i), box_params.l0_list(i), box_params.P_world(:,i), Plist_world(:,i))];
         moment = [moment, (Plist_world(1,i)-x) * force(2,i) - (Plist_world(2,i)-y)*force(1,i)];
     end
     a_translation = [0;-box_params.g] + 1/box_params.m * sum(force,2);
