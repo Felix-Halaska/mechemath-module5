@@ -8,7 +8,7 @@ function simulate_box_test()
     Pbr_box = [LW;-LH]/2;
     Ptl_box = [-LW;LH]/2;
     Ptr_box = [LW;LH]/2;
-    boundary_pts = [Pbl_box,Pbr_box,Ptr_box,Ptl_box,Pbl_box];
+    boundary_pts = [Pbl_box,Pbr_box,Ptr_box,Ptl_box];
     Pbl1_world = Pbl_box + [-LG;-LG];
     Pbl2_world = Pbl_box + [LG;-LG];
     Pbr1_world = Pbr_box + [0;-l0];
@@ -28,28 +28,37 @@ function simulate_box_test()
     %load the system parameters into the rate function
     %via an anonymous function
     my_rate_func = @(t_in,V_in) box_rate_func(t_in,V_in,box_params);
-    x0 = 0.1;
-    y0 = 0.1;
-    theta0 = 0.1;
+    x0 = 2;
+    y0 = 2;
+    theta0 = 0;
     vx0 = 0;
     vy0 = 0;
     vtheta0 = 0;
     V0 = [x0;y0;theta0;vx0;vy0;vtheta0];
-    tspan = [0,10];
+    tspan = [0,1];
     %run the integration
     [tlist,Vlist] = ode45(my_rate_func,tspan,V0);
 
     %plot!
     num_zigs = 5;
     w = .1;
-    sprint_plot_struct = initialize_spring_plot(num_zigs, w);
+    hold on
+    spring_plot_struct_br1 = initialize_spring_plot(num_zigs, w);
+    spring_plot_struct_br2 = initialize_spring_plot(num_zigs, w);
+    spring_plot_struct_bl1 = initialize_spring_plot(num_zigs, w);
+    spring_plot_struct_bl2 = initialize_spring_plot(num_zigs, w);
+    axis equal; axis square;
+    axis([-10,0,-5,5]);
 
-    for i = 1:length(Vlist, 2)
+    for i = 1:size(Vlist, 2)
         p_list_world = compute_rbt(Vlist(1, i), Vlist(2, i), Vlist(3, i), box_params.P_box);
 
-        update_all_springs(sprint_plot_struct, p_list_world, box_params);
+        update_spring_plot(spring_plot_struct_br1, p_list_world(:, 1), box_params.P_world(:,1));
+        update_spring_plot(spring_plot_struct_br2, p_list_world(:, 2), box_params.P_world(:,2));
+        update_spring_plot(spring_plot_struct_bl1, p_list_world(:, 3), box_params.P_world(:,3));
+        update_spring_plot(spring_plot_struct_bl2, p_list_world(:, 4), box_params.P_world(:,4));
 
-        drawnow
+        drawnow;
     end
 
 

@@ -19,6 +19,6 @@
 %dVdt = [dxdt;dydt;dthetadt;d2xdt2;d2ydt2;d2thetadt2]:
 % the time derivative of the state vector
 function dVdt = box_rate_func(t,V,box_params)
-    accel = compute_accel(V(1), V(2), V(3), box_params);
-    dVdt = [V(4);V(5);V(6);accel'];
+    [dx,dy,dtheta] = compute_accel(V(1), V(2), V(3), box_params);
+    dVdt = [V(4);V(5);V(6);dx;dy;dtheta];
 end
