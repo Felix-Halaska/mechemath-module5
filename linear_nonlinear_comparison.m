@@ -33,7 +33,7 @@ vx0 = 0;
 vy0 = 0;
 vtheta0 = 0;
 %small number used to scale initial perturbation
-epsilon = 2;
+epsilon = 0.1;
 
 my_rate_func = @(t_in, V_in) box_rate_func(t_in,V_in,box_params);
 
@@ -60,37 +60,36 @@ tspan = [0 1];
 % your_integrator(my_linear_rate,tspan,V0,...);
 
 
-f=figure();
-tcl = tiledlayout(3, 1);
+% f=figure();
+% tcl = tiledlayout(3, 1);
+% 
+% nexttile(tcl);
+% hold on
+% 
+% plot(tlist_linear, Vlist_linear(:, 1), 'k', LineWidth=5);
+% plot(tlist_nonlinear, Vlist_nonlinear(:,1), 'r--', LineWidth=5);
+% xlabel("Time (-)", Interpreter="latex", FontSize=14)
+% ylabel("x position (-)", Interpreter="latex", FontSize=14)
+% hold off;
+% 
+% nexttile(tcl);
+% hold on
+% plot(tlist_linear, Vlist_linear(:, 2), 'k', LineWidth=5);
+% plot(tlist_nonlinear, Vlist_nonlinear(:,2), 'r--', LineWidth=5);
+% xlabel("Time (-)", Interpreter="latex", FontSize=14)
+% ylabel("y position (-)", Interpreter="latex", FontSize=14)
+% hold off;
+% 
+% nexttile(tcl);
+% hold on
+% plot(tlist_linear, Vlist_linear(:, 3), 'k', LineWidth=5);
+% plot(tlist_nonlinear, Vlist_nonlinear(:,3), 'r--', LineWidth=5);
+% xlabel("Time (-)", Interpreter="latex", FontSize=14)
+% ylabel("theta position (-)", Interpreter="latex", FontSize=14)
+% hold off;
+% 
+% sgtitle("Linear vs. Nonlinear EOMs for Large Perturbation ($\epsilon$ = 2)", Interpreter='latex', FontSize=15)
+% hl = legend(["Linearized EOMs" "Nonlinear EOMs"],Interpreter='latex', FontSize=15);
+% hl.Layout.Tile = 'South';
 
-nexttile(tcl);
-hold on
-
-plot(tlist_linear, Vlist_linear(:, 1), 'k', LineWidth=5);
-plot(tlist_nonlinear, Vlist_nonlinear(:,1), 'r--', LineWidth=5);
-xlabel("Time (-)", Interpreter="latex", FontSize=14)
-ylabel("x position (-)", Interpreter="latex", FontSize=14)
-hold off;
-
-nexttile(tcl);
-hold on
-plot(tlist_linear, Vlist_linear(:, 2), 'k', LineWidth=5);
-plot(tlist_nonlinear, Vlist_nonlinear(:,2), 'r--', LineWidth=5);
-xlabel("Time (-)", Interpreter="latex", FontSize=14)
-ylabel("y position (-)", Interpreter="latex", FontSize=14)
-hold off;
-
-nexttile(tcl);
-hold on
-plot(tlist_linear, Vlist_linear(:, 3), 'k', LineWidth=5);
-plot(tlist_nonlinear, Vlist_nonlinear(:,3), 'r--', LineWidth=5);
-xlabel("Time (-)", Interpreter="latex", FontSize=14)
-ylabel("theta position (-)", Interpreter="latex", FontSize=14)
-hold off;
-
-sgtitle("Linear vs. Nonlinear EOMs for Large Perturbation ($\epsilon$ = 2)", Interpreter='latex', FontSize=15)
-hl = legend(["Linearized EOMs" "Nonlinear EOMs"],Interpreter='latex', FontSize=15);
-hl.Layout.Tile = 'South';
-
-exportgraphics(f, 'plots/lin_nonlin_large.png', 'Resolution',300)
-
+% exportgraphics(f, 'plots/lin_nonlin_large.png', 'Resolution',300)
